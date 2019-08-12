@@ -37,10 +37,12 @@ async function parsePackageJson(targetPath = './') {
 }
 
 async function find(targetPath) {
-    const isTargetExists = await isExists(targetPath);
-
-    if (!isTargetExists) {
+    if (!(await isExists(targetPath))) {
         return log.error('Target path does not exist');
+    }
+
+    if (!(await isExists(path.join(targetPath, 'package.json')))) {
+        return log.error('Target path should contain a valid package.json');
     }
 
     const packages = await parsePackageJson(targetPath);

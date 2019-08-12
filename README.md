@@ -1,9 +1,10 @@
 ## JS Dependency Viewer
 
 ### How to run:
-1. node ./build/jdv.js
-2. Required parameter `--target="/path/to/application"`
-3. Optional parameter `--out="result.json"` (default: stdout to console)
+1. cd ./build
+2. node jdv.js
+3. Required parameter `--target="/path/to/application"`
+4. Optional parameter `--out="result.json"` (default: stdout to console)
 
 
 ### Output:

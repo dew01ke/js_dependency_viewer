@@ -22,13 +22,22 @@ args.forEach((arg) => {
 
 
 if (options.target) {
-    find(options.target).then((object) => {
+    log.info('Processing... Target path = ' + options.target);
+    find(options.target).then((dependencyObject) => {
+        if (!dependencyObject) {
+            return false;
+        }
+
+        if (Array.isArray(dependencyObject) && !dependencyObject.length) {
+            return log.info('No external dependencies found');
+        }
+
         if (options.out) {
-            return saveData(options.out, JSON.stringify(object)).then(() => {
+            return saveData(options.out, JSON.stringify(dependencyObject)).then(() => {
                 log.success('The result has been save to ' + options.out);
             });
         } else {
-            log.success(JSON.stringify(object));
+            log.success(JSON.stringify(dependencyObject));
         }
     });
 } else {

@@ -3,6 +3,9 @@ const { COLORS } = require('../common/constants');
 
 
 const log = {
+    info: (text) => {
+        return console.log(COLORS.default, text, COLORS.reset);
+    },
     success: (text) => {
         return console.log(COLORS.success, text, COLORS.reset);
     },
