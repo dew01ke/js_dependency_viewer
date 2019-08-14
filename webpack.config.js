@@ -1,3 +1,4 @@
+const webpack = require('webpack');
 const path = require('path');
 const nodeExternals = require('webpack-node-externals');
 
@@ -8,7 +9,7 @@ const config = {
     },
     output: {
         filename: 'jdv.js',
-        path: path.join(__dirname, '/build')
+        path: path.join(__dirname, '/bin')
     },
     module: {
         rules: [{
@@ -18,6 +19,12 @@ const config = {
     },
     externals: [
         nodeExternals()
+    ],
+    plugins: [
+        new webpack.BannerPlugin({
+            banner: '#!/usr/bin/env node\r\n\r\n',
+            raw: true
+        })
     ]
 };
 

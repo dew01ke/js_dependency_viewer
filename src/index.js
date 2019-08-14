@@ -47,3 +47,7 @@ if (options.target) {
 process.on('unhandledRejection', () => {
     log.error('Ooops, unhandled rejection');
 });
+
+module.exports = {
+    find
+};

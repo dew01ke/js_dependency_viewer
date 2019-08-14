@@ -1,11 +1,34 @@
 ## JS Dependency Viewer
+A simple tool to find all external dependencies of your project.
 
-### How to run:
-1. cd ./build
-2. node jdv.js
-3. Required parameter `--target="/path/to/application"`
-4. Optional parameter `--out="result.json"` (default: stdout to console)
+### How to install:
 
+#### Globally
+```text
+npm install -g js_dependency_viewer
+```
+
+Then you can run from your terminal with parameters:
+1. Required parameter `--target="/path/to/application"`
+2. Optional parameter `--out="result.json"` (default: stdout to console)
+
+```text
+jdv --target="/path/to/application" --out="result.json"
+```
+
+#### Locally:
+
+```text
+npm install --save js_dependency_viewer
+```
+
+```javascript
+const jdv = require('js_dependency_viewer');
+
+jdv.find('/path/to/application').then((dependencyObject) => {
+    // ...
+});
+```
 
 ### Output:
 ```json
@@ -27,8 +50,8 @@
         {  
         "name":"get",
         "location":[  
-            "target2\\src\\file1.ts",
-            "target2\\src\\file2.ts"
+            "target\\src\\file1.ts",
+            "target\\src\\file2.ts"
         ]},
         {  
         "name":"each",
