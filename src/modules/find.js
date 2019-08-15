@@ -1,7 +1,19 @@
 const path = require('path');
-const { getFiles, getContent, isExists } = require('./filesystem');
+const {
+    getFiles,
+    getContent,
+    isExists,
+    getFileSize
+} = require('./filesystem');
 const { parseContent } = require('./extractor');
-const { flatten, filterExternalDependencies, safeJSONParse, asyncReduce, _DIRTY_getPackageSize, log } = require('../common/helpers');
+const {
+    flatten,
+    filterExternalDependencies,
+    safeJSONParse,
+    asyncReduce,
+    log,
+    join
+} = require('../common/helpers');
 
 
 function filterFiles(files, extensions = ['.vue', '.js', '.ts', '.js6', '.es6']) {
@@ -19,20 +31,36 @@ function getDependenciesObject(target) {
         .then(filterExternalDependencies);
 }
 
+// REFACTOR
 async function parsePackageJson(targetPath = './') {
     return getContent(path.join(targetPath, 'package.json'))
         .then(({ content }) => safeJSONParse(content))
         .then((json) => json.dependencies || {})
         .then(async (packageObject) => {
-            return asyncReduce(
-                Object.keys(packageObject),
-                async (object, module) => {
-                    object[module] = await _DIRTY_getPackageSize(module);
+            if (!(await isExists(path.resolve(targetPath, 'node_modules')))) {
+                log.info(`Make sure you run 'npm install' in ${targetPath} folder`);
 
+                return Object.keys(packageObject).reduce((object, key) => {
+                    object[key] = 0;
                     return object;
-                },
-                {}
-            );
+                }, {})
+            }
+
+            const packages = Object.keys(packageObject);
+            const folders = packages.map((pack) => path.resolve(targetPath, 'node_modules', pack));
+            const dirs = await Promise.all(folders.map((folder) => getFiles(folder)));
+            const sizes = await Promise.all(dirs.map((dir) => {
+                return asyncReduce(
+                    dir,
+                    async (size, path) => {
+                        size += await getFileSize(path);
+                        return size;
+                    },
+                    0
+                );
+            }));
+
+            return join(packages, sizes);
         });
 }
 

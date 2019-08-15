@@ -1,16 +1,15 @@
-const https = require('https');
 const { COLORS, PACKAGE_NAME } = require('../common/constants');
 
 
 const log = {
-    info: (text) => {
-        return console.log(COLORS.default, `[${PACKAGE_NAME}]:`, text, COLORS.reset);
+    info: (...text) => {
+        return console.log(COLORS.default, `[${PACKAGE_NAME}]:`, text.join(' '), COLORS.reset);
     },
-    success: (text) => {
-        return console.log(COLORS.success, `[${PACKAGE_NAME}]:`, text, COLORS.reset);
+    success: (...text) => {
+        return console.log(COLORS.success, `[${PACKAGE_NAME}]:`, text.join(' '), COLORS.reset);
     },
-    error: (text) => {
-        return console.log(COLORS.error, `[${PACKAGE_NAME}]:`, text, COLORS.reset);
+    error: (...text) => {
+        return console.log(COLORS.error, `[${PACKAGE_NAME}]:`, text.join(' '), COLORS.reset);
     }
 };
 
@@ -44,42 +43,19 @@ async function asyncReduce(array, handler, startingValue) {
     return result;
 }
 
-function _DIRTY_getPackageSize(module, version) {
-    return new Promise((resolve, reject) => {
-        https.get(`https://packagephobia.now.sh/result?p=${module}`, (resp) => {
-            let data = '';
-
-            resp.on('data', (chunk) => {
-                data += chunk;
-            });
-
-            resp.on('end', () => {
-                const pattern = /\| Publish Size: (.*?) \|/;
-                const found = pattern.exec(data);
-                let size = (found && found.length > 1) ? found[1] : 0;
-
-                if (/mb/i.test(size)) {
-                    size = parseFloat(size.split(/mb/i)) * 1024;
-                }
-
-                if (/kb/i.test(size)) {
-                    size = parseFloat(size.split(/kb/i));
-                }
-
-                return resolve(size);
-            });
-        }).on('error', (err) => {
-            return resolve(0);
-        });
-    });
+function join(keys, values) {
+    return values.reduce((result, field, index) => {
+        result[keys[index]] = field;
+        return result;
+    }, {});
 }
 
 module.exports = {
+    join,
     log,
     flatten,
     safeJSONParse,
     splitNames,
     filterExternalDependencies,
-    asyncReduce,
-    _DIRTY_getPackageSize
+    asyncReduce
 };

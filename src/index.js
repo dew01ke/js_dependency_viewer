@@ -46,8 +46,8 @@ if (isRunningAsGlobal) {
     }
 }
 
-process.on('unhandledRejection', () => {
-    log.error('Ooops, unhandled rejection');
+process.on('unhandledRejection', (err) => {
+    log.error('Ooops, unhandled rejection', err);
 });
 
 module.exports = {

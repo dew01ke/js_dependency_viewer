@@ -23,6 +23,16 @@ async function getFiles(dir, excludePath = ['node_modules']) {
     return files.reduce((a, f) => a.concat(f), []);
 }
 
+function getFileSize(path) {
+    return stat(path)
+        .then((result) => {
+            return result.size;
+        })
+        .catch(() => {
+            return 0;
+        });
+}
+
 async function getContent(filename) {
     return {
         filename: path.relative(process.cwd(), filename),
@@ -46,6 +56,7 @@ function saveData(filename, data) {
 }
 
 module.exports = {
+    getFileSize,
     getFiles,
     getContent,
     saveData,
