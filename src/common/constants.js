@@ -8,7 +8,10 @@ const COLORS = {
     success: "\x1b[32m"
 };
 
+const PACKAGE_NAME = 'js-dependency-viewer';
+
 module.exports = {
+    PACKAGE_NAME,
     PATTERN_IMPORT,
     COLORS
 };

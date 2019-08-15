@@ -1,6 +1,6 @@
 {
-  "name": "js_dependency_viewer",
-  "version": "1.0.2",
+  "name": "js-dependency-viewer",
+  "version": "1.0.0",
   "description": "A simple tool to find all external dependencies of your project.",
   "main": "./src/index.js",
   "scripts": {

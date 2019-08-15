@@ -5,7 +5,7 @@ A simple tool to find all external dependencies of your project.
 
 #### Globally
 ```text
-npm install -g js_dependency_viewer
+npm install -g js-dependency-viewer
 ```
 
 Then you can run from your terminal with parameters:
@@ -19,11 +19,11 @@ jdv --target="/path/to/application" --out="result.json"
 #### Locally:
 
 ```text
-npm install --save js_dependency_viewer
+npm install --save js-dependency-viewer
 ```
 
 ```javascript
-const jdv = require('js_dependency_viewer');
+const jdv = require('js-dependency-viewer');
 
 jdv.find('/path/to/application').then((dependencyObject) => {
     // ...

@@ -1,16 +1,16 @@
 const https = require('https');
-const { COLORS } = require('../common/constants');
+const { COLORS, PACKAGE_NAME } = require('../common/constants');
 
 
 const log = {
     info: (text) => {
-        return console.log(COLORS.default, text, COLORS.reset);
+        return console.log(COLORS.default, `[${PACKAGE_NAME}]:`, text, COLORS.reset);
     },
     success: (text) => {
-        return console.log(COLORS.success, text, COLORS.reset);
+        return console.log(COLORS.success, `[${PACKAGE_NAME}]:`, text, COLORS.reset);
     },
     error: (text) => {
-        return console.log(COLORS.error, text, COLORS.reset);
+        return console.log(COLORS.error, `[${PACKAGE_NAME}]:`, text, COLORS.reset);
     }
 };
 
