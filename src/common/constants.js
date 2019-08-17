@@ -10,8 +10,15 @@ const COLORS = {
 
 const PACKAGE_NAME = 'js-dependency-viewer';
 
+const DEFAULT_PACKAGE_JSON = 'package.json';
+const DEFAULT_NODE_MODULES = 'node_modules';
+const DEFAULT_EXTENSIONS = ['.vue', '.js', '.ts', '.js6', '.es6'];
+
 module.exports = {
     PACKAGE_NAME,
     PATTERN_IMPORT,
-    COLORS
+    COLORS,
+    DEFAULT_PACKAGE_JSON,
+    DEFAULT_NODE_MODULES,
+    DEFAULT_EXTENSIONS
 };

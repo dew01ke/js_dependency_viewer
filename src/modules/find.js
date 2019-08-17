@@ -14,9 +14,14 @@ const {
     log,
     join
 } = require('../common/helpers');
+const {
+    DEFAULT_PACKAGE_JSON,
+    DEFAULT_NODE_MODULES,
+    DEFAULT_EXTENSIONS
+} = require('../common/constants');
 
 
-function filterFiles(files, extensions = ['.vue', '.js', '.ts', '.js6', '.es6']) {
+function filterFiles(files, extensions = DEFAULT_EXTENSIONS) {
     return files.filter((file) => {
         return extensions.includes(path.extname(file));
     });
@@ -31,37 +36,40 @@ function getDependenciesObject(target) {
         .then(filterExternalDependencies);
 }
 
-// REFACTOR
+function getPackagesSize(targetPath) {
+    return async (packageObject) => {
+        if (!(await isExists(path.resolve(targetPath, DEFAULT_NODE_MODULES)))) {
+            log.info(`Make sure you run 'npm install' in ${targetPath} folder`);
+
+            return Object.keys(packageObject).reduce((object, key) => {
+                object[key] = null;
+                return object;
+            }, {})
+        }
+
+        const packages = Object.keys(packageObject);
+        const folders = packages.map((pack) => path.resolve(targetPath, DEFAULT_NODE_MODULES, pack));
+        const dirs = await Promise.all(folders.map((folder) => getFiles(folder)));
+        const sizes = await Promise.all(dirs.map((dir) => {
+            return asyncReduce(
+                dir,
+                async (size, path) => {
+                    size += await getFileSize(path);
+                    return size;
+                },
+                0
+            );
+        }));
+
+        return join(packages, sizes);
+    }
+}
+
 async function parsePackageJson(targetPath = './') {
-    return getContent(path.join(targetPath, 'package.json'))
+    return getContent(path.join(targetPath, DEFAULT_PACKAGE_JSON))
         .then(({ content }) => safeJSONParse(content))
         .then((json) => json.dependencies || {})
-        .then(async (packageObject) => {
-            if (!(await isExists(path.resolve(targetPath, 'node_modules')))) {
-                log.info(`Make sure you run 'npm install' in ${targetPath} folder`);
-
-                return Object.keys(packageObject).reduce((object, key) => {
-                    object[key] = 0;
-                    return object;
-                }, {})
-            }
-
-            const packages = Object.keys(packageObject);
-            const folders = packages.map((pack) => path.resolve(targetPath, 'node_modules', pack));
-            const dirs = await Promise.all(folders.map((folder) => getFiles(folder)));
-            const sizes = await Promise.all(dirs.map((dir) => {
-                return asyncReduce(
-                    dir,
-                    async (size, path) => {
-                        size += await getFileSize(path);
-                        return size;
-                    },
-                    0
-                );
-            }));
-
-            return join(packages, sizes);
-        });
+        .then(getPackagesSize(targetPath));
 }
 
 async function find(targetPath) {
@@ -69,7 +77,7 @@ async function find(targetPath) {
         return log.error('Target path does not exist');
     }
 
-    if (!(await isExists(path.join(targetPath, 'package.json')))) {
+    if (!(await isExists(path.join(targetPath, DEFAULT_PACKAGE_JSON)))) {
         return log.error('Target path should contain a valid package.json');
     }
 
@@ -86,9 +94,11 @@ async function find(targetPath) {
         if (!output[moduleKey]) {
             output[moduleKey] = {
                 module: dep.module,
-                size: packages[dep.module],
                 methods: {}
             };
+            if (packages[dep.module]) {
+                output[moduleKey].size = packages[dep.module];
+            }
         }
 
         const methodKey = `${dep.module}_${dep.originalName}`;

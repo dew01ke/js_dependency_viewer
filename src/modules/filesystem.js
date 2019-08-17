@@ -6,9 +6,10 @@ const readdir = promisify(fs.readdir);
 const stat = promisify(fs.stat);
 const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
+const { DEFAULT_NODE_MODULES } = require('../common/constants');
 
 
-async function getFiles(dir, excludePath = ['node_modules']) {
+async function getFiles(dir, excludePath = [DEFAULT_NODE_MODULES]) {
     const subdirs = await readdir(dir);
     const files = await Promise.all(subdirs.map(async (subdir) => {
         const res = resolve(dir, subdir);
