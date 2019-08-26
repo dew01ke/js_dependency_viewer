@@ -50,6 +50,14 @@ function join(keys, values) {
     }, {});
 }
 
+function buildExtensionsArray(str) {
+    const extensions = str.replace(/["|']/g, '').split(',');
+    return extensions.map((extension) => {
+        const ext = extension.trim();
+        return (ext.startsWith('.')) ? ext : `.${ext}`;
+    });
+}
+
 module.exports = {
     join,
     log,
@@ -57,5 +65,6 @@ module.exports = {
     safeJSONParse,
     splitNames,
     filterExternalDependencies,
-    asyncReduce
+    asyncReduce,
+    buildExtensionsArray
 };

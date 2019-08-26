@@ -11,6 +11,7 @@ npm install -g js-dependency-viewer
 Then you can run from your terminal with parameters:
 1. Required parameter `--target="/path/to/application"`
 2. Optional parameter `--out="result.json"` (default: stdout to console)
+3. Optional parameter `--ext="extension1,extension2,extension3"` (default: `['.vue', '.js', '.ts', '.js6', '.es6']`)
 
 ```text
 jdv --target="/path/to/application" --out="result.json"

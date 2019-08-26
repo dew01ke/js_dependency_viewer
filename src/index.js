@@ -1,6 +1,6 @@
 const { find } = require('./modules/find');
 const { saveData } = require('./modules/filesystem');
-const { log } = require('./common/helpers');
+const { log, buildExtensionsArray } = require('./common/helpers');
 
 
 const isRunningAsGlobal = !module.parent;
@@ -18,13 +18,23 @@ args.forEach((arg) => {
         case '--out':
             options.out = value;
             break;
+
+        case '--ext':
+            const extensions = buildExtensionsArray(value);
+            if (extensions.length) {
+                options.extensions = extensions;
+            }
+            break;
+
+        default:
+            log.info('Unknown parameter = ' + key);
     }
 });
 
 if (isRunningAsGlobal) {
     if (options.target) {
         log.info('Processing... Target path = ' + options.target);
-        find(options.target).then((dependencyObject) => {
+        find(options.target, options.extensions).then((dependencyObject) => {
             if (!dependencyObject) {
                 return false;
             }

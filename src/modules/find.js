@@ -21,15 +21,17 @@ const {
 } = require('../common/constants');
 
 
-function filterFiles(files, extensions = DEFAULT_EXTENSIONS) {
-    return files.filter((file) => {
-        return extensions.includes(path.extname(file));
-    });
+function filterFiles(extensions = DEFAULT_EXTENSIONS) {
+    return (files) => {
+        return files.filter((file) => {
+            return extensions.includes(path.extname(file));
+        });
+    }
 }
 
-function getDependenciesObject(target) {
+function getDependenciesObject(target, extensions) {
     return getFiles(target)
-        .then(filterFiles)
+        .then(filterFiles(extensions))
         .then(async (files) => await Promise.all(files.map((file) => getContent(file))))
         .then((contents) => contents.map(({ content, filename }) => parseContent(content, filename)))
         .then(flatten)
@@ -72,7 +74,7 @@ async function parsePackageJson(targetPath = './') {
         .then(getPackagesSize(targetPath));
 }
 
-async function find(targetPath) {
+async function find(targetPath, extensions) {
     if (!(await isExists(targetPath))) {
         return log.error('Target path does not exist');
     }
@@ -82,7 +84,7 @@ async function find(targetPath) {
     }
 
     const packages = await parsePackageJson(targetPath);
-    const deps = await getDependenciesObject(targetPath);
+    const deps = await getDependenciesObject(targetPath, extensions);
     const output = {};
 
     deps.forEach((dep) => {
