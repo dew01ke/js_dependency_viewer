@@ -1,3 +1,4 @@
+const path = require('path');
 const { PATTERN_IMPORT } = require('../common/constants');
 const { flatten, splitNames } = require('../common/helpers');
 
@@ -27,7 +28,7 @@ function getNameObject(input) {
     };
 }
 
-function buildDependenciesObject(extractArray, filename) {
+function buildDependenciesObject(extractArray, filename, relativePath) {
     return extractArray.map((dependency) => {
         const name = splitNames(dependency.name);
 
@@ -35,14 +36,16 @@ function buildDependenciesObject(extractArray, filename) {
             return {
                 ...getNameObject(n),
                 ...dependency,
-                filename
+                filename,
+                relativePath,
+                resolvedPath: dependency.module.startsWith('.') ? path.resolve(relativePath + '/..', dependency.module) : null
             };
         })
     });
 }
 
-function parseContent(content, filename) {
-    return flatten(buildDependenciesObject(findDependencies(content, PATTERN_IMPORT), filename));
+function parseContent(content, filename, relativePath) {
+    return flatten(buildDependenciesObject(findDependencies(content, PATTERN_IMPORT), filename, relativePath));
 }
 
 module.exports = {

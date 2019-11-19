@@ -36,6 +36,7 @@ function getFileSize(path) {
 
 async function getContent(filename) {
     return {
+        relativePath: filename,
         filename: path.relative(process.cwd(), filename),
         content: await readFile(filename, { encoding: 'utf8' })
     };

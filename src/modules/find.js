@@ -1,14 +1,12 @@
 const path = require('path');
+const { getDependenciesObject } = require('./dependencies');
 const {
     getFiles,
     getContent,
     isExists,
     getFileSize
 } = require('./filesystem');
-const { parseContent } = require('./extractor');
 const {
-    flatten,
-    filterExternalDependencies,
     safeJSONParse,
     asyncReduce,
     log,
@@ -16,27 +14,9 @@ const {
 } = require('../common/helpers');
 const {
     DEFAULT_PACKAGE_JSON,
-    DEFAULT_NODE_MODULES,
-    DEFAULT_EXTENSIONS
+    DEFAULT_NODE_MODULES
 } = require('../common/constants');
 
-
-function filterFiles(extensions = DEFAULT_EXTENSIONS) {
-    return (files) => {
-        return files.filter((file) => {
-            return extensions.includes(path.extname(file));
-        });
-    }
-}
-
-function getDependenciesObject(target, extensions) {
-    return getFiles(target)
-        .then(filterFiles(extensions))
-        .then(async (files) => await Promise.all(files.map((file) => getContent(file))))
-        .then((contents) => contents.map(({ content, filename }) => parseContent(content, filename)))
-        .then(flatten)
-        .then(filterExternalDependencies);
-}
 
 function getPackagesSize(targetPath) {
     return async (packageObject) => {
